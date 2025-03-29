@@ -3,23 +3,25 @@ import urllib.request
 import sqlite3
 import pandas as pd
 import requests
+from pathlib import Path
 from config import (
-    DB_PATH, DB_URL, CITIES_PATH, EXCHANGE_RATE_API
+    RAW_DATA_DIR, DB_URL, CITIES_PATH, EXCHANGE_RATE_API
 )
 
 def download_database():
     """Download the Northwind database if it doesn't exist locally."""
-    if not os.path.exists(DB_PATH):
+    db_path = RAW_DATA_DIR / "northwind.db"
+    if not db_path.exists():
         print("Downloading Northwind database...")
-        os.makedirs(os.path.dirname(DB_PATH), exist_ok=True)
-        urllib.request.urlretrieve(DB_URL, DB_PATH)
+        urllib.request.urlretrieve(DB_URL, db_path)
         print("Download complete.")
     else:
         print("Database already exists locally.")
+    return db_path
 
-def get_database_connection():
+def get_database_connection(db_path):
     """Create and return a connection to the SQLite database."""
-    conn = sqlite3.connect(DB_PATH)
+    conn = sqlite3.connect(db_path)
     print("Connected to the Northwind database.")
     return conn
 
@@ -37,10 +39,10 @@ def load_tables(conn):
 
 def load_cities_data():
     """Load world cities data from local CSV file."""
-    if not os.path.exists(CITIES_PATH):
+    if not CITIES_PATH.exists():
         raise FileNotFoundError(
             f"World cities dataset not found at {CITIES_PATH}. "
-            "Please ensure the worldcities.csv file is in the project root directory."
+            "Please ensure the worldcities.csv file is in the data directory."
         )
     return pd.read_csv(CITIES_PATH)
 
@@ -52,5 +54,5 @@ def get_exchange_rate():
         data = response.json()
         return data['rates']['EUR']
     except Exception as e:
-        print("Error fetching exchange rate:", e)
+        print(f"Error fetching exchange rate: {e}")
         return 0.92  # Fallback rate if API fails 

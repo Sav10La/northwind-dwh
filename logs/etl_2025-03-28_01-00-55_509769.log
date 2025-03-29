@@ -1,5 +1,0 @@
-2025-03-28 01:00:56 | INFO     | __main__:main:141 - Starting ETL scheduler...
-2025-03-28 01:00:56 | INFO     | __main__:main:146 - Initialized job metadata table
-2025-03-28 01:00:56 | INFO     | __main__:show_status:119 - No scheduled runs
-2025-03-28 01:00:56 | INFO     | __main__:show_status:122 - 
-Recent job history:

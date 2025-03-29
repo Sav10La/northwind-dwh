@@ -5,13 +5,6 @@
 wheel>=0.42.0,<1.0.0  # Required for proper package installation
 pandas==1.5.3
 requests==2.31.0
-dash==2.9.0
-plotly==5.13.0
-
-# Web deployment
-gunicorn==21.2.0
-dash-bootstrap-components==1.5.0
-dash-iconify==0.1.2
 
 # ETL and scheduling
 schedule==1.2.0
@@ -20,7 +13,8 @@ loguru==0.7.0
 
 # Database
 sqlalchemy==2.0.23
-psycopg2-binary==2.9.9  # For Heroku PostgreSQL
+pg8000>=1.31.1  # Pure Python PostgreSQL driver
+cloud-sql-python-connector[pg8000]>=1.7.0  # For Cloud SQL
 
 # Platform-specific dependencies
 pyarrow>=14.0.1,<15.0.0; python_version >= "3.8"  # For better pandas performance

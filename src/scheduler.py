@@ -28,8 +28,8 @@ def run_etl():
         logger.info("Starting data extraction...")
         
         # Download and connect to database
-        download_database()
-        conn = get_database_connection()
+        db_path = download_database()
+        conn = get_database_connection(db_path)
         
         # Load tables
         tables = load_tables(conn)

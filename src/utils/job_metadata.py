@@ -7,11 +7,11 @@ import sys
 src_path = Path(__file__).parent.parent
 sys.path.append(str(src_path))
 
-from config import DWH_PATH
+from config import SQLITE_DB
 
 def init_job_metadata():
     """Initialize the job metadata table."""
-    conn = sqlite3.connect(DWH_PATH)
+    conn = sqlite3.connect(SQLITE_DB)
     cursor = conn.cursor()
     
     # Create job metadata table
@@ -33,7 +33,7 @@ def init_job_metadata():
 
 def log_job_start(job_name):
     """Log the start of a job."""
-    conn = sqlite3.connect(DWH_PATH)
+    conn = sqlite3.connect(SQLITE_DB)
     cursor = conn.cursor()
     
     cursor.execute('''
@@ -49,7 +49,7 @@ def log_job_start(job_name):
 
 def log_job_end(job_id, status, error_message=None):
     """Log the end of a job."""
-    conn = sqlite3.connect(DWH_PATH)
+    conn = sqlite3.connect(SQLITE_DB)
     cursor = conn.cursor()
     
     # Get start time
@@ -74,7 +74,7 @@ def log_job_end(job_id, status, error_message=None):
 
 def get_job_history(job_name=None, limit=10):
     """Get the execution history of jobs."""
-    conn = sqlite3.connect(DWH_PATH)
+    conn = sqlite3.connect(SQLITE_DB)
     cursor = conn.cursor()
     
     query = '''

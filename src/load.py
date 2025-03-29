@@ -1,19 +1,17 @@
 import sqlite3
 import pandas as pd
-from config import DWH_PATH
-import logging
-
-logger = logging.getLogger(__name__)
+from config import SQLITE_DB
+from loguru import logger
 
 def load_table(df, table_name, conn):
     """Load a DataFrame into the data warehouse."""
     df.to_sql(table_name, conn, if_exists="replace", index=False)
-    print(f"Loaded {table_name} into data warehouse.")
+    logger.info(f"Loaded {table_name} into data warehouse.")
 
 def create_data_warehouse():
     """Create the data warehouse database."""
     # Connect to (or create) the DW SQLite database
-    dwh_conn = sqlite3.connect(DWH_PATH)
+    dwh_conn = sqlite3.connect(SQLITE_DB)
     return dwh_conn
 
 def load_data_warehouse(fact_sales, dimensions):
@@ -29,8 +27,8 @@ def load_data_warehouse(fact_sales, dimensions):
     
     # Confirm tables are created
     tables = pd.read_sql("SELECT name FROM sqlite_master WHERE type='table';", dwh_conn)
-    print("\n✅ Data warehouse schema stored successfully in SQLite:")
-    print(tables)
+    logger.info("\n✅ Data warehouse schema stored successfully in SQLite:")
+    logger.info(tables)
     
     return dwh_conn
 

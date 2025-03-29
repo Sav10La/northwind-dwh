@@ -1,0 +1,34 @@
+2025-03-30 02:27:41 | INFO     | __main__:main:141 - Starting ETL scheduler...
+2025-03-30 02:27:41 | INFO     | __main__:main:146 - Initialized job metadata table
+2025-03-30 02:27:41 | INFO     | __main__:main:156 - Running ETL once (no scheduling)...
+2025-03-30 02:27:41 | INFO     | __main__:run_etl:23 - Starting ETL process...
+2025-03-30 02:27:41 | INFO     | __main__:run_etl:28 - Starting data extraction...
+2025-03-30 02:27:42 | INFO     | __main__:run_etl:36 - Loaded all tables from database
+2025-03-30 02:27:42 | INFO     | __main__:run_etl:40 - Loaded world cities data
+2025-03-30 02:27:43 | INFO     | __main__:run_etl:44 - Got exchange rate: 0.925
+2025-03-30 02:27:43 | INFO     | __main__:run_etl:47 - Data extraction completed successfully
+2025-03-30 02:27:43 | INFO     | __main__:run_etl:51 - Starting data transformation...
+2025-03-30 02:27:43 | INFO     | __main__:run_etl:55 - Cleaned all tables
+2025-03-30 02:27:43 | INFO     | __main__:run_etl:59 - Created dimension tables
+2025-03-30 02:27:43 | INFO     | __main__:run_etl:63 - Created fact table
+2025-03-30 02:27:43 | INFO     | __main__:run_etl:70 - Enriched customer dimension
+2025-03-30 02:27:43 | INFO     | __main__:run_etl:73 - Data transformation completed successfully
+2025-03-30 02:27:43 | INFO     | __main__:run_etl:77 - Starting data loading...
+2025-03-30 02:27:44 | INFO     | load:load_table:9 - Loaded fact_sales into data warehouse.
+2025-03-30 02:27:44 | INFO     | load:load_table:9 - Loaded dim_customer into data warehouse.
+2025-03-30 02:27:44 | INFO     | load:load_table:9 - Loaded dim_product into data warehouse.
+2025-03-30 02:27:44 | INFO     | load:load_table:9 - Loaded dim_date into data warehouse.
+2025-03-30 02:27:44 | INFO     | load:load_data_warehouse:30 - 
+✅ Data warehouse schema stored successfully in SQLite:
+2025-03-30 02:27:44 | INFO     | load:load_data_warehouse:31 -               name
+0     job_metadata
+1  sqlite_sequence
+2       fact_sales
+3     dim_customer
+4      dim_product
+5         dim_date
+2025-03-30 02:27:44 | INFO     | __main__:run_etl:81 - Loaded data into warehouse
+2025-03-30 02:27:45 | INFO     | load:add_revenue_eur:51 - Added EUR revenue (rate: 0.925)
+2025-03-30 02:27:45 | INFO     | __main__:run_etl:85 - Added EUR revenue
+2025-03-30 02:27:45 | INFO     | __main__:run_etl:88 - Data loading completed successfully
+2025-03-30 02:27:45 | INFO     | __main__:run_etl:90 - ETL process completed successfully!
