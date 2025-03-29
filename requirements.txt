@@ -18,3 +18,7 @@ cloud-sql-python-connector[pg8000]>=1.7.0  # For Cloud SQL
 
 # Platform-specific dependencies
 pyarrow>=14.0.1,<15.0.0; python_version >= "3.8"  # For better pandas performance
+
+# Visualization
+streamlit>=1.32.0  # For web dashboard
+plotly>=5.18.0  # For interactive visualizations
