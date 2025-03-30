@@ -1,145 +1,117 @@
-# Northwind Data Warehouse ETL Pipeline
+# Northwind Data Warehouse and OLAP Dashboard
+
+A comprehensive data warehouse solution for the Northwind database with an interactive OLAP dashboard.
 
 ## Project Structure
+
 ```
-coursework/
-├── data/               # Data files (worldcities.csv)
-├── db/                 # Database files
-├── logs/              # Log files
-├── src/               # Source code
-│   ├── utils/         # Utility modules
-│   ├── config.py      # Configuration
-│   ├── extract.py     # Data extraction
-│   ├── load.py        # Data loading
-│   ├── main.py        # Main entry point
-│   ├── scheduler.py   # Scheduling
-│   └── transform.py   # Data transformation
-├── app.py             # Web dashboard
-├── Procfile           # Heroku process configuration
-├── README.md          # Documentation
-└── requirements.txt   # Dependencies
+DWH_CW_1631/
+├── data/
+│   ├── raw/                  # Raw data files
+│   ├── processed/            # Processed data files
+│   ├── worldcities.csv      # Cities data for enrichment
+│   └── northwind_dwh.sqlite # Data warehouse
+├── dashboard/
+│   └── streamlit_app.py     # OLAP Dashboard
+├── src/
+│   ├── config.py           # Configuration settings
+│   ├── extract.py          # Data extraction
+│   ├── transform.py        # Data transformation
+│   ├── load.py            # Data loading
+│   ├── main.py            # Main ETL pipeline
+│   ├── scheduler.py       # ETL scheduling
+│   └── utils/
+│       ├── job_metadata.py # Job tracking
+│       └── logger.py       # Logging utilities
+├── .streamlit/
+│   └── config.toml         # Streamlit configuration
+├── logs/                   # ETL execution logs
+├── requirements.txt        # Project dependencies
+└── README.md              # Documentation
 ```
-
-## Setup
-
-1. Ensure you have Python 3.8 or higher installed
-2. Create a virtual environment:
-   ```bash
-   python -m venv venv
-   source venv/bin/activate  # On Windows: venv\Scripts\activate
-   ```
-3. Upgrade pip:
-   ```bash
-   python -m pip install --upgrade pip
-   ```
-4. Install dependencies:
-   ```bash
-   pip install -r requirements.txt
-   ```
-5. Place the worldcities.csv file in the data directory
-
-## Running Locally
-
-1. Run the ETL pipeline:
-   ```bash
-   python src/main.py
-   ```
-
-2. Start the dashboard:
-   ```bash
-   python app.py
-   ```
-
-3. Access the dashboard at http://localhost:8050
-
-## Deployment to Heroku
-
-1. Install the Heroku CLI and login:
-   ```bash
-   heroku login
-   ```
-
-2. Create a new Heroku app:
-   ```bash
-   heroku create northwind-dwh
-   ```
-
-3. Add PostgreSQL addon:
-   ```bash
-   heroku addons:create heroku-postgresql:hobby-dev
-   ```
-
-4. Set environment variables:
-   ```bash
-   heroku config:set DATABASE_URL=$(heroku config:get DATABASE_URL)
-   ```
-
-5. Deploy the application:
-   ```bash
-   git add .
-   git commit -m "Initial deployment"
-   git push heroku main
-   ```
-
-6. Scale the dynos:
-   ```bash
-   heroku ps:scale web=1 worker=1
-   ```
-
-7. Access your dashboard at https://northwind-dwh.herokuapp.com
 
 ## Features
 
-### ETL Pipeline
-- Automated data extraction from Northwind database
-- Data transformation and cleaning
-- Geographic data enrichment
-- Daily scheduled updates
-- Comprehensive logging
+The dashboard provides interactive OLAP operations:
 
-### Dashboard
-- Sales trends visualization
-- Top products analysis
-- Top customers analysis
-- Geographic distribution of sales
-- Real-time data updates
+1. **Roll-up & Drill-down Analysis**
+   - Time hierarchy (Year → Quarter → Month → Day)
+   - Geography hierarchy (Country → City)
+   - Product hierarchy (Category → Product)
 
-## Monitoring and Maintenance
+2. **Slice & Dice Analysis**
+   - Interactive dimension selection
+   - Heatmap visualization
+   - Detailed data view
 
-### Logs
-- Application logs are available in the logs directory
-- View Heroku logs:
-  ```bash
-  heroku logs --tail
-  ```
+3. **Pivot Analysis**
+   - Customizable pivot tables
+   - Multiple aggregation functions
+   - Interactive visualizations
 
-### Database
-- Regular backups are automatically created
-- Monitor database size:
-  ```bash
-  heroku pg:info
-  ```
+## Running Locally
 
-### Scaling
-- Scale dynos as needed:
-  ```bash
-  heroku ps:scale web=2 worker=2
-  ```
+1. **Setup Environment**:
+   ```bash
+   # Create and activate virtual environment
+   python -m venv venv
+   .\venv\Scripts\activate  # Windows
+   source venv/bin/activate # Linux/Mac
+   
+   # Install dependencies
+   pip install -r requirements.txt
+   ```
+
+2. **Start the ETL Pipeline**:
+   ```bash
+   # Start the scheduler (recommended)
+   python src/scheduler.py
+   ```
+   This will:
+   - Run the ETL pipeline immediately
+   - Schedule daily runs at midnight
+   - Keep running in the background
+   
+   Note: The scheduler needs to be running in a separate terminal window. You can stop it at any time by pressing Ctrl+C.
+
+3. **Run the Dashboard**:
+   ```bash
+   streamlit run dashboard/streamlit_app.py
+   ```
+   The dashboard will open in your browser at `http://localhost:8501`
+
+4. **Alternative: One-time ETL Run**
+   If you only want to run the ETL pipeline once without scheduling:
+   ```bash
+   python src/scheduler.py --once
+   ```
+   Or check the current status of the scheduler:
+   ```bash
+   python src/scheduler.py --status
+   ```
+
+## GitHub Repository
+
+The project is available on GitHub: [northwind-dwh](https://github.com/Sav10La/northwind-dwh)
+
+## Online Dashboard
+
+Access the deployed dashboard at: [Northwind OLAP Dashboard](https://northwind-dwh-kca6z7nfgnsu4ldbvadhj9.streamlit.app/)
 
 ## Troubleshooting
 
-### Common Issues
-1. Database connection errors
-   - Check DATABASE_URL environment variable
-   - Verify PostgreSQL addon status
+If you encounter any issues:
 
-2. ETL failures
-   - Check logs for specific error messages
-   - Verify data file permissions
+1. **Year Values Not Showing**
+   - The dashboard uses the year 2024 for all dates
+   - This is a known limitation of the data source
 
-3. Dashboard not updating
-   - Check worker dyno status
-   - Verify scheduler is running
+2. **Data Not Updating**
+   - Ensure the scheduler is running
+   - Check the logs in the `logs` directory
+   - Verify the data warehouse file exists
 
-### Support
-For issues or questions, please create an issue in the repository. 
+3. **Dashboard Not Loading**
+   - Make sure the ETL pipeline has run at least once
+   - Check if the data warehouse file exists
+   - Verify all dependencies are installed 

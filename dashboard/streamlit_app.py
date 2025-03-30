@@ -93,7 +93,7 @@ if operation == "Roll-up & Drill-down":
             ["Year", "Quarter", "Month", "Day"]
         )
         
-        df['Year'] = df['OrderDate'].dt.year
+        df['Year'] = df['OrderDate'].dt.year.astype(int)
         df['Quarter'] = df['OrderDate'].dt.to_period('Q').astype(str)
         df['Month'] = df['OrderDate'].dt.strftime('%Y-%m')
         df['Day'] = df['OrderDate'].dt.strftime('%Y-%m-%d')
@@ -101,6 +101,14 @@ if operation == "Roll-up & Drill-down":
         if level == "Year":
             agg_data = df.groupby('Year')['RevenueEUR'].sum().reset_index()
             x_col = 'Year'
+            # Add formatting for year axis
+            fig = px.bar(agg_data, x=x_col, y='RevenueEUR',
+                        title=f'Revenue by {level}',
+                        labels={'RevenueEUR': 'Revenue (EUR)', 'Year': 'Year'},
+                        text=agg_data['RevenueEUR'].round(2))
+            fig.update_traces(texttemplate='€%{text:,.0f}', textposition='outside')
+            fig.update_xaxes(tickformat='d', dtick=1)  # Force integer ticks for years
+            st.plotly_chart(fig, use_container_width=True)
         elif level == "Quarter":
             agg_data = df.groupby('Quarter')['RevenueEUR'].sum().reset_index()
             x_col = 'Quarter'
@@ -194,7 +202,7 @@ elif operation == "Slice & Dice":
     if dice_dimension1 != dice_dimension2:
         # Prepare data for selected dimensions
         if "Year" in [dice_dimension1, dice_dimension2]:
-            df['Year'] = df['OrderDate'].dt.year
+            df['Year'] = df['OrderDate'].dt.year.astype(int)
         
         agg_data = df.groupby([dice_dimension1, dice_dimension2])['RevenueEUR'].sum().reset_index()
         
@@ -252,23 +260,33 @@ else:  # Pivot Analysis
     if rows != cols:
         # Prepare data
         if "Year" in [rows, cols]:
-            df['Year'] = df['OrderDate'].dt.year
+            df['Year'] = df['OrderDate'].dt.year.astype(int)
         
         # Create pivot table
         if agg_func == "Sum":
             agg_method = 'sum'
+            value_col = 'RevenueEUR'
+            format_str = "€{:,.2f}"
         elif agg_func == "Average":
             agg_method = 'mean'
+            value_col = 'RevenueEUR'
+            format_str = "€{:,.2f}"
         elif agg_func == "Count":
             agg_method = 'count'
+            value_col = 'OrderID'  # Count orders instead of revenue
+            format_str = "{:,.0f}"  # Integer format for counts
         elif agg_func == "Min":
             agg_method = 'min'
+            value_col = 'RevenueEUR'
+            format_str = "€{:,.2f}"
         else:
             agg_method = 'max'
+            value_col = 'RevenueEUR'
+            format_str = "€{:,.2f}"
         
         pivot_table = pd.pivot_table(
             df,
-            values='RevenueEUR',
+            values=value_col,
             index=rows,
             columns=cols,
             aggfunc=agg_method,
@@ -281,18 +299,19 @@ else:  # Pivot Analysis
         
         # Display pivot table
         st.dataframe(
-            pivot_table.style.format("€{:,.2f}"),
+            pivot_table.style.format(format_str),
             use_container_width=True
         )
         
         # Visualization
         fig = px.imshow(pivot_table.iloc[:-1, :-1],  # Exclude totals from heatmap
-                       labels=dict(x=cols, y=rows, color=f"Revenue ({agg_func})"),
+                       labels=dict(x=cols, y=rows, color=f"{agg_func}"),
                        aspect="auto",
-                       title=f'Revenue Analysis: {rows} vs {cols} ({agg_func})')
+                       title=f'{agg_func} Analysis: {rows} vs {cols}')
         
-        fig.update_traces(text=pivot_table.iloc[:-1, :-1].round(2), texttemplate="€%{text:,.0f}")
-        fig.update_layout(coloraxis_colorbar_title=f"Revenue ({agg_func})")
+        fig.update_traces(text=pivot_table.iloc[:-1, :-1].round(2), 
+                         texttemplate="%{text:,.0f}" if agg_func == "Count" else "€%{text:,.0f}")
+        fig.update_layout(coloraxis_colorbar_title=agg_func)
         
         st.plotly_chart(fig, use_container_width=True)
     else:
