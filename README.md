@@ -49,6 +49,13 @@ The dashboard provides interactive OLAP operations:
    - Multiple aggregation functions
    - Interactive visualizations
 
+## Prerequisites
+
+1. **Python Installation**:
+   - Download and install Python 3.11 from [Python Downloads](https://www.python.org/downloads/release/python-3116/)
+   - During installation, make sure to check "Add Python 3.11 to PATH"
+   - Verify installation by running `python --version` in terminal
+
 ## Running Locally
 
 1. **Setup Environment**:
@@ -102,16 +109,27 @@ Access the deployed dashboard at: [Northwind OLAP Dashboard](https://northwind-d
 
 If you encounter any issues:
 
-1. **Year Values Not Showing**
-   - The dashboard uses the year 2024 for all dates
-   - This is a known limitation of the data source
+1. **Python Installation**
+   - Make sure Python 3.11 is installed and added to PATH
+   - Try running `python --version` to verify installation
+   - If Python command is not recognized, restart your terminal after installation
 
-2. **Data Not Updating**
+2. **Dependencies Installation**
+   - If you encounter any package installation errors, try upgrading pip first:
+     ```bash
+     pip install --upgrade pip setuptools wheel
+     ```
+   - Then reinstall the requirements:
+     ```bash
+     pip install -r requirements.txt
+     ```
+
+3. **Data Not Updating**
    - Ensure the scheduler is running
    - Check the logs in the `logs` directory
    - Verify the data warehouse file exists
 
-3. **Dashboard Not Loading**
+4. **Dashboard Not Loading**
    - Make sure the ETL pipeline has run at least once
    - Check if the data warehouse file exists
    - Verify all dependencies are installed 

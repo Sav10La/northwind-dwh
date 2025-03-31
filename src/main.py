@@ -19,8 +19,8 @@ def main():
     
     # Extract
     print("\n=== Extraction Phase ===")
-    download_database()
-    conn = get_database_connection()
+    db_path = download_database()
+    conn = get_database_connection(db_path)
     tables = load_tables(conn)
     world_cities = load_cities_data()
     exchange_rate = get_exchange_rate()

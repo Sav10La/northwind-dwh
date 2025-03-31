@@ -101,14 +101,6 @@ if operation == "Roll-up & Drill-down":
         if level == "Year":
             agg_data = df.groupby('Year')['RevenueEUR'].sum().reset_index()
             x_col = 'Year'
-            # Add formatting for year axis
-            fig = px.bar(agg_data, x=x_col, y='RevenueEUR',
-                        title=f'Revenue by {level}',
-                        labels={'RevenueEUR': 'Revenue (EUR)', 'Year': 'Year'},
-                        text=agg_data['RevenueEUR'].round(2))
-            fig.update_traces(texttemplate='€%{text:,.0f}', textposition='outside')
-            fig.update_xaxes(tickformat='d', dtick=1)  # Force integer ticks for years
-            st.plotly_chart(fig, use_container_width=True)
         elif level == "Quarter":
             agg_data = df.groupby('Quarter')['RevenueEUR'].sum().reset_index()
             x_col = 'Quarter'
@@ -119,11 +111,19 @@ if operation == "Roll-up & Drill-down":
             agg_data = df.groupby('Day')['RevenueEUR'].sum().reset_index()
             x_col = 'Day'
         
+        # Create the chart with appropriate formatting
         fig = px.bar(agg_data, x=x_col, y='RevenueEUR',
                     title=f'Revenue by {level}',
                     labels={'RevenueEUR': 'Revenue (EUR)'},
                     text=agg_data['RevenueEUR'].round(2))
+        
+        # Apply formatting
         fig.update_traces(texttemplate='€%{text:,.0f}', textposition='outside')
+        
+        # Special formatting for Year level
+        if level == "Year":
+            fig.update_xaxes(tickformat='d', dtick=1)  # Force integer ticks for years
+        
         st.plotly_chart(fig, use_container_width=True)
         
     elif dimension == "Geography":
@@ -150,9 +150,12 @@ if operation == "Roll-up & Drill-down":
         st.plotly_chart(fig, use_container_width=True)
         
         if level == "City":
+            # Drop the unnamed index column and show only relevant columns
+            display_data = agg_data[['Country', 'City', 'RevenueEUR']]
             st.dataframe(
-                agg_data.style.format({'RevenueEUR': '€{:,.2f}'}),
-                use_container_width=True
+                display_data.style.format({'RevenueEUR': '€{:,.2f}'}),
+                use_container_width=True,
+                hide_index=True  # Hide the index column
             )
     
     else:  # Product
@@ -217,6 +220,13 @@ elif operation == "Slice & Dice":
         fig.update_traces(text=pivot_data.round(2), texttemplate="€%{text:,.0f}")
         fig.update_layout(coloraxis_colorbar_title="Revenue (EUR)")
         
+        # Force integer ticks for Year dimension
+        if "Year" in [dice_dimension1, dice_dimension2]:
+            if dice_dimension1 == "Year":
+                fig.update_yaxes(tickformat='d', dtick=1)
+            if dice_dimension2 == "Year":
+                fig.update_xaxes(tickformat='d', dtick=1)
+        
         st.plotly_chart(fig, use_container_width=True)
         
         # Show detailed data
@@ -279,7 +289,7 @@ else:  # Pivot Analysis
             agg_method = 'min'
             value_col = 'RevenueEUR'
             format_str = "€{:,.2f}"
-        else:
+        else:  # Max
             agg_method = 'max'
             value_col = 'RevenueEUR'
             format_str = "€{:,.2f}"
@@ -312,6 +322,13 @@ else:  # Pivot Analysis
         fig.update_traces(text=pivot_table.iloc[:-1, :-1].round(2), 
                          texttemplate="%{text:,.0f}" if agg_func == "Count" else "€%{text:,.0f}")
         fig.update_layout(coloraxis_colorbar_title=agg_func)
+        
+        # Force integer ticks for Year dimension
+        if "Year" in [rows, cols]:
+            if rows == "Year":
+                fig.update_yaxes(tickformat='d', dtick=1)
+            if cols == "Year":
+                fig.update_xaxes(tickformat='d', dtick=1)
         
         st.plotly_chart(fig, use_container_width=True)
     else:
