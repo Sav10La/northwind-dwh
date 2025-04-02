@@ -27,6 +27,9 @@ DWH_CW_1631/
 │   └── config.toml         # Streamlit configuration
 ├── logs/                   # ETL execution logs
 ├── requirements.txt        # Project dependencies
+├── Dockerfile             # Docker configuration
+├── docker-compose.yml     # Docker Compose configuration
+├── entrypoint.sh          # Container entrypoint script
 └── README.md              # Documentation
 ```
 
@@ -51,12 +54,47 @@ The dashboard provides interactive OLAP operations:
 
 ## Prerequisites
 
-1. **Python Installation**:
-   - Download and install Python 3.11 from [Python Downloads](https://www.python.org/downloads/release/python-3116/)
-   - During installation, make sure to check "Add Python 3.11 to PATH"
-   - Verify installation by running `python --version` in terminal
+1. **Docker Installation**:
+   - Download and install Docker Desktop from [Docker Downloads](https://www.docker.com/products/docker-desktop)
+   - Make sure Docker Desktop is running
+   - Verify installation by running `docker --version` in terminal
 
-## Running Locally
+## Running with Docker
+
+1. **Build and Start Containers**:
+   ```bash
+   # Build and start all services
+   docker-compose up --build
+   ```
+   This will:
+   - Build the Docker image
+   - Start the ETL scheduler
+   - Start the Streamlit dashboard
+   - Mount necessary volumes for data persistence
+
+2. **Access the Dashboard**:
+   - Open your browser and navigate to `http://localhost:8501`
+   - The dashboard will be available and automatically update with new data
+
+3. **View Logs**:
+   ```bash
+   # View logs for all services
+   docker-compose logs -f
+   
+   # View logs for specific service
+   docker-compose logs -f scheduler
+   docker-compose logs -f dashboard
+   ```
+
+4. **Stop the Services**:
+   ```bash
+   # Stop all services
+   docker-compose down
+   ```
+
+## Running Locally (Alternative)
+
+If you prefer to run the application without Docker:
 
 1. **Setup Environment**:
    ```bash
@@ -87,49 +125,41 @@ The dashboard provides interactive OLAP operations:
    ```
    The dashboard will open in your browser at `http://localhost:8501`
 
-4. **Alternative: One-time ETL Run**
-   If you only want to run the ETL pipeline once without scheduling:
-   ```bash
-   python src/scheduler.py --once
-   ```
-   Or check the current status of the scheduler:
-   ```bash
-   python src/scheduler.py --status
-   ```
-
-## GitHub Repository
-
-The project is available on GitHub: [northwind-dwh](https://github.com/Sav10La/northwind-dwh)
-
-## Online Dashboard
-
-Access the deployed dashboard at: [Northwind OLAP Dashboard](https://northwind-dwh-kca6z7nfgnsu4ldbvadhj9.streamlit.app/)
-
 ## Troubleshooting
 
 If you encounter any issues:
 
-1. **Python Installation**
-   - Make sure Python 3.11 is installed and added to PATH
-   - Try running `python --version` to verify installation
-   - If Python command is not recognized, restart your terminal after installation
-
-2. **Dependencies Installation**
-   - If you encounter any package installation errors, try upgrading pip first:
+1. **Docker Issues**
+   - Make sure Docker Desktop is running
+   - Check if ports 8501 are available
+   - Try rebuilding the containers:
      ```bash
-     pip install --upgrade pip setuptools wheel
-     ```
-   - Then reinstall the requirements:
-     ```bash
-     pip install -r requirements.txt
+     docker-compose down
+     docker-compose up --build
      ```
 
-3. **Data Not Updating**
-   - Ensure the scheduler is running
+2. **Data Not Updating**
+   - Check the scheduler logs:
+     ```bash
+     docker-compose logs -f scheduler
+     ```
+   - Verify the data volumes are properly mounted
    - Check the logs in the `logs` directory
-   - Verify the data warehouse file exists
 
-4. **Dashboard Not Loading**
-   - Make sure the ETL pipeline has run at least once
-   - Check if the data warehouse file exists
-   - Verify all dependencies are installed 
+3. **Dashboard Not Loading**
+   - Check the dashboard logs:
+     ```bash
+     docker-compose logs -f dashboard
+     ```
+   - Verify the dashboard container is running:
+     ```bash
+     docker-compose ps
+     ```
+   - Make sure port 8501 is not in use by another application
+
+4. **Dependencies Installation**
+   - If you encounter any package installation errors in the container, check the build logs:
+     ```bash
+     docker-compose build --no-cache
+     ```
+   - Make sure all required packages are listed in requirements.txt 

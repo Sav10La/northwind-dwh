@@ -1,31 +1,17 @@
 # Python
 __pycache__/
 *.py[cod]
-*$py.class
-*.so
-.Python
 venv/
-.env
-
-# Data
-data/raw/*
-data/processed/*
-!data/raw/.gitkeep
-!data/processed/.gitkeep
-
-# Logs
-logs/*
-!logs/.gitkeep
 
 # IDE
 .idea/
 .vscode/
-*.swp
-*.swo
+
+# Data and logs
+data/northwind_dwh.sqlite
+data/processed/
+logs/
 
 # OS
 .DS_Store
-Thumbs.db
-
-# Project specific
-.devcontainer/ 
+Thumbs.db 
