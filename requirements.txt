@@ -2,22 +2,18 @@
 # Requires Python 3.8 or higher
 
 # Core dependencies
-wheel>=0.42.0,<1.0.0  # Required for proper package installation
-pandas==2.0.3
-requests==2.31.0
-numpy==1.24.3
+pandas>=2.0.0
+numpy>=1.24.0
+requests>=2.31.0
+pytz>=2024.1
 
-# ETL and scheduling
-schedule==1.2.0
-python-dotenv==1.0.0
-loguru==0.7.0
+# ETL
+schedule>=1.2.0
+loguru>=0.7.0
 
 # Database
-sqlalchemy==2.0.23
-
-# Platform-specific dependencies
-pyarrow>=14.0.1,<15.0.0; python_version >= "3.8"  # For better pandas performance
+sqlalchemy>=2.0.0
 
 # Visualization
-streamlit==1.32.0  # For web dashboard
-plotly==5.18.0  # For interactive visualizations
+streamlit>=1.32.0
+plotly>=5.18.0

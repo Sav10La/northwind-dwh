@@ -1,15 +1,25 @@
 # Python
-**/__pycache__/
-**/*.py[cod]
-**/*$py.class
+__pycache__/
+*.py[cod]
+*$py.class
 *.so
 .Python
 venv/
-ENV/
+.env
+
+# Data
+data/raw/*
+data/processed/*
+!data/raw/.gitkeep
+!data/processed/.gitkeep
+
+# Logs
+logs/*
+!logs/.gitkeep
 
 # IDE
-.vscode/
 .idea/
+.vscode/
 *.swp
 *.swo
 

@@ -1,0 +1,27 @@
+services:
+  dashboard:
+    build: .
+    command: dashboard
+    ports:
+      - "8501:8501"
+    volumes:
+      - northwind-data:/app/data
+      - ./logs:/app/logs
+    environment:
+      - PYTHONPATH=/app
+    depends_on:
+      - scheduler
+    restart: unless-stopped
+
+  scheduler:
+    build: .
+    command: scheduler
+    volumes:
+      - northwind-data:/app/data
+      - ./logs:/app/logs
+    environment:
+      - PYTHONPATH=/app
+    restart: unless-stopped
+
+volumes:
+  northwind-data: 

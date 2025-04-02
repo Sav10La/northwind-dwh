@@ -6,6 +6,8 @@ from pathlib import Path
 import sys
 import sqlite3
 from datetime import datetime
+from src.config import ROOT_DIR
+import os
 
 # Add src directory to Python path
 src_path = Path(__file__).parent.parent / "src"
@@ -17,14 +19,19 @@ from config import SQLITE_DB
 st.set_page_config(
     page_title="Northwind Data Warehouse Dashboard",
     page_icon="📊",
-    layout="wide"
+    layout="wide",
+    initial_sidebar_state="expanded"
 )
 
-# Title
-st.title("Northwind Data Warehouse Dashboard")
+# Initialize session state
+if 'last_refresh' not in st.session_state:
+    st.session_state.last_refresh = datetime.now()
+    st.session_state.df = None
+    st.session_state.current_view = 'home'
+    st.session_state.is_loading = False
 
 # Connect to database
-@st.cache_data
+@st.cache_data(ttl=15)  # Cache data for 15 seconds
 def load_data():
     conn = sqlite3.connect(SQLITE_DB)
     sales_df = pd.read_sql("""
@@ -42,12 +49,8 @@ def load_data():
     
     return sales_df
 
-# Load data
-try:
-    df = load_data()
-except Exception as e:
-    st.error(f"Error loading data: {str(e)}")
-    st.stop()
+# Title at the top
+st.title("Northwind Data Warehouse Dashboard")
 
 # Sidebar - OLAP Operations Selection
 st.sidebar.header("OLAP Operations")
@@ -55,6 +58,25 @@ operation = st.sidebar.selectbox(
     "Select OLAP Operation",
     ["Roll-up & Drill-down", "Slice & Dice", "Pivot Analysis"]
 )
+
+# Load data with loading state
+if st.session_state.df is None:
+    with st.spinner('Loading data...'):
+        st.session_state.df = load_data()
+        st.session_state.last_refresh = datetime.now()
+
+# Check if it's time to refresh data (only if not loading)
+if not st.session_state.is_loading:
+    current_time = datetime.now()
+    if (current_time - st.session_state.last_refresh).seconds >= 15:
+        st.session_state.is_loading = True
+        with st.spinner('Refreshing data...'):
+            st.session_state.df = load_data()
+            st.session_state.last_refresh = current_time
+        st.session_state.is_loading = False
+
+# Use the data from session state
+df = st.session_state.df
 
 # Common Filters (Slice operation)
 st.sidebar.header("Global Filters (Slice)")
@@ -337,3 +359,4 @@ else:  # Pivot Analysis
 # Footer
 st.markdown("---")
 st.markdown("Data source: Northwind Database | Last updated: Daily")
+
